@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+
+
+
+
+
+/* Add this CSS to your styles (or in your component's CSS file) */
+.blinking-text {
+    animation: blink 1s step-start infinite;
+    color: red;
+  }
+  
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  
