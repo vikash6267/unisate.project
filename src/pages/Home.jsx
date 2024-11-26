@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import UnisatRequirmentShow from "../component/common/UnisatRequirmentShow";
+import { toast } from "react-toastify";
 
 function Home() {
   const [data, setData] = useState([]);
@@ -13,7 +14,7 @@ function Home() {
       const response = await axios.get(
         `http://localhost:3000/auctions/${firsttime}`
       );
-console.log(response.data)
+
       if (Array.isArray(response.data)) {
         if (firsttime === "true") {
           setData(response.data);
@@ -46,6 +47,16 @@ console.log(response.data)
     newData.forEach((item) => {
       if (item.type === "valuebadi") {
         if (!selectedTicker || selectedTicker.tick !== item.tick) {
+      // console.log(item.tick +item.unitPrice.toFixed(4) , item.quantity , item.totalPrice)
+
+      toast.error(
+        <>
+          <div>Ticker: {item.tick}</div>
+          <div>Unit Price: {item.unitPrice.toFixed(4)}</div>
+          <div>Quantity: {item.quantity}</div>
+          <div>Total Price: {item.totalPrice.toFixed(4)}</div>
+        </>
+      );
           updatedTicker = item;
         }
       }
