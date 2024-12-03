@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function UnisatRequirmentShow({fetchDataAll}) {
+function UnisatRequirmentShow({fetchDataAll,forApi}) {
   const [data, setData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newRequirement, setNewRequirement] = useState({
@@ -11,7 +11,7 @@ function UnisatRequirmentShow({fetchDataAll}) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:3005/api/requirements');
+      const response = await axios.get(`http://localhost:3005/${forApi}/requirements`);
       setData(response.data);
     } catch (error) {
       console.error('Error fetching data:', error.message);
@@ -39,7 +39,7 @@ function UnisatRequirmentShow({fetchDataAll}) {
       };
   
       // Send the formatted data to the API
-      await axios.post('http://localhost:3005/api/requirements', formattedRequirement);
+      await axios.post(`http://localhost:3005/${forApi}/requirements`, formattedRequirement);
   
       // Refresh the data and reset modal
       fetchData();
@@ -56,7 +56,7 @@ function UnisatRequirmentShow({fetchDataAll}) {
 
   const handleDeleteRequirement = async (key) => {
     try {
-      await axios.delete(`http://localhost:3005/api/requirements/${key}`);
+      await axios.delete(`http://localhost:3005/${forApi}/requirements/${key}`);
       fetchData();
     } catch (error) {
       console.error('Error deleting requirement:', error.message);
@@ -64,7 +64,7 @@ function UnisatRequirmentShow({fetchDataAll}) {
   };
 
   useEffect(() => {
-
+console.log(forApi)
     fetchData();
   }, []);
 

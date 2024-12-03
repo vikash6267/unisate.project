@@ -170,6 +170,7 @@ const api_keys = [
     try {
       const response = await axios.post(url, payload, { headers });
       const inscription = response.data.data.list[0];
+      // console.log(inscription)
       if (!inscription) {
         console.error(`No inscription found for tick ${tick}`);
         return null;

@@ -12,7 +12,7 @@ function Home() {
   const fetchDataAll = async (firsttime = "false") => {
     try {
       const response = await axios.get(
-        `http://localhost:3005/api/auctions/${firsttime}`
+        `http://localhost:3005/unisat/auctions/${firsttime}`
       );
 
       if (Array.isArray(response.data)) {
@@ -149,7 +149,7 @@ function Home() {
 
 
 
-      <UnisatRequirmentShow fetchDataAll={fetchDataAll} />
+      <UnisatRequirmentShow fetchDataAll={fetchDataAll} forApi={"unisat"} />
     </div>
   );
 }

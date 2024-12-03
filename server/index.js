@@ -9,7 +9,8 @@ app.use(cors());
 // Default requirements
 
 
-app.use("/api",require("./routes/unisatRoutes"))
+app.use("/unisat",require("./routes/unisatRoutes"))
+app.use("/magic",require("./routes/magicRoutes"))
 
 // Start the server
 app.listen(PORT, () => {
