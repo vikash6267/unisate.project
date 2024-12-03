@@ -12,7 +12,7 @@ function Home() {
   const fetchDataAll = async (firsttime = "false") => {
     try {
       const response = await axios.get(
-        `https://crypto.mahitechnocrafts.in/auctions/${firsttime}`
+        `http://localhost:3005/api/auctions/${firsttime}`
       );
 
       if (Array.isArray(response.data)) {

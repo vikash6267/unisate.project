@@ -11,7 +11,7 @@ function UnisatRequirmentShow({fetchDataAll}) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://crypto.mahitechnocrafts.in/requirements');
+      const response = await axios.get('http://localhost:3005/api/requirements');
       setData(response.data);
     } catch (error) {
       console.error('Error fetching data:', error.message);
@@ -39,7 +39,7 @@ function UnisatRequirmentShow({fetchDataAll}) {
       };
   
       // Send the formatted data to the API
-      await axios.post('https://crypto.mahitechnocrafts.in/requirements', formattedRequirement);
+      await axios.post('http://localhost:3005/api/requirements', formattedRequirement);
   
       // Refresh the data and reset modal
       fetchData();
@@ -56,7 +56,7 @@ function UnisatRequirmentShow({fetchDataAll}) {
 
   const handleDeleteRequirement = async (key) => {
     try {
-      await axios.delete(`https://crypto.mahitechnocrafts.in/requirements/${key}`);
+      await axios.delete(`http://localhost:3005/api/requirements/${key}`);
       fetchData();
     } catch (error) {
       console.error('Error deleting requirement:', error.message);

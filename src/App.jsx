@@ -1,11 +1,17 @@
-import logo from './logo.svg';
 import './App.css';
 import Home from './pages/Home';
+import { Route, Routes } from "react-router-dom";
+import MagicEden from './pages/MagicEden';
 
 function App() {
   return (
     <div className="">
-     <Home />
+    <Routes>
+
+       <Route path='/' element={ <Home />} />
+       <Route path='/magic' element={ <MagicEden />} />
+    </Routes>
+    
     </div>
   );
 }

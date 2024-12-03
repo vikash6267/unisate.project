@@ -9,7 +9,7 @@ const RequirementsApp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://crypto.mahitechnocrafts.in/requirements", {
+      const res = await axios.post("http://localhost:3005/api/requirements", {
         tick_name: tickName,
         value: value || null, // Send null if the value is empty
       });
