@@ -5,6 +5,7 @@ const axios = require("axios")
 let requirements = {
 
 };
+let convertionBackup = "0.0"
 
 const api_keys = [
     "6b25a9637f399a23f63444bd09cd6fef3d6c259df750ad8004cc2e9948e79eec",
@@ -140,10 +141,11 @@ const api_keys = [
   
     try {
       const response = await axios.get(url, { params, headers });
+      convertionBackup = response.data.data[0].quote.USD.price / 100_000_000;
       return response.data.data[0].quote.USD.price / 100_000_000;
     } catch (error) {
       console.error("Error fetching conversion factor:", error.message);
-      return 0.0;
+      return convertionBackup;
     }
   }
   

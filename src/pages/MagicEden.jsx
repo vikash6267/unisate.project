@@ -13,13 +13,16 @@ const App = () => {
   const fetchData = async (firsttime = "false") => {
     try {
       const response = await axios.get(
-        `https://crypto.mahitechnocrafts.in/magic/magic-eden/${firsttime}`
+        `http://localhost:3005/magic/magic-eden/${firsttime}`
       );
+      const conversionFactor = response.data[0]?.conversionFactor || 1;
+      setConvertion(conversionFactor);
+
       setAllData(response.data);
+
       response.data.forEach((item) => {
         checkForValueBadi(item);
       });
-      setConvertion(response.data[0]?.conversionFactor || convertion);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -27,20 +30,26 @@ const App = () => {
 
   const checkForValueBadi = (newData) => {
     if (newData.type === "valuebadi") {
+      const order = newData.runes.orders[0];
+      if(convertion === 0){
+        return null
+      }
+      if (!order) return;
+      const formattedUnitPrice = order?.formattedUnitPrice || 0;
       audio.play().catch((err) => {
         console.error("Error playing audio:", err);
       });
       toast.error(
         <>
-          <div>Ticker: {newData.runes.orders[0].rune}</div>
+          <div>Ticker: {order.rune || "N/A"}</div>
           <div>
-            Unit Price:
-            {(newData.runes.orders[0].formattedUnitPrice * convertion).toFixed(4)}
+            Unit Price: {(formattedUnitPrice * convertion).toFixed(4)}
           </div>
         </>
       );
     }
   };
+  
 
   useEffect(() => {
     fetchData("true");
@@ -48,7 +57,7 @@ const App = () => {
       fetchData("false");
     }, 6000);
     return () => clearInterval(interval);
-  }, []);
+  }, [convertion]);
 
   // Grouping first 2 orders for each rune
   const groupedOrders = allData
