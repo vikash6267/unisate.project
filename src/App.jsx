@@ -5,6 +5,7 @@ import MagicEden from './pages/MagicEden';
 import Navbar from './component/Navbar';
 import { useEffect, useState } from 'react';
 import Login from './pages/Login';
+import CombinedPage from './pages/CombinePage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -57,6 +58,14 @@ function App() {
           element={
             <CheckLoginStatus>
               <MagicEden />
+            </CheckLoginStatus>
+          }
+        />
+        <Route
+          path="/combine"
+          element={
+            <CheckLoginStatus>
+              <CombinedPage />
             </CheckLoginStatus>
           }
         />

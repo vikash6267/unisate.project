@@ -7,10 +7,13 @@ let requirements = {
 };
 // Hardcoded Magic Eden API key
 const MAGIC_EDEN_API_KEY = 'abd05538-4a51-4b40-89ac-d9fad0649ee0';
-
+let convertionBackup = "0.0"
 const coinApi = [
 	'52b6f479-de02-4b92-84be-f285670e7a6b',
-	'2bc4f529-dd2d-4dbe-8916-a779c679c02b'
+	'2bc4f529-dd2d-4dbe-8916-a779c679c02b',
+
+  "72023931-d329-442c-9807-2d676521f1a6",
+  
 ]
 const cAPi = {
 	[Symbol.iterator]() {
@@ -43,10 +46,11 @@ async function getConversionFactor() {
   
     try {
       const response = await axios.get(url, { params, headers });
+      convertionBackup = response.data.data[0].quote.USD.price / 100_000_000;
       return response.data.data[0].quote.USD.price / 100_000_000;
     } catch (error) {
       console.error("Error fetching conversion factor:", error.message);
-      return 0.0;
+      return convertionBackup;
     }
   }
 // Route to get Rune collection stats and convert to Excel

@@ -2,10 +2,12 @@ import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import UnisatRequirmentShow from "../component/common/UnisatRequirmentShow";
 import { toast } from "react-toastify";
-
+import tone from "../assests/tone.mp3"
 function Home() {
   const [data, setData] = useState([]);
   const [selectedTicker, setSelectedTicker] = useState(null);
+  const [toggleShow, setToggleShow] = useState(false);
+  const audio = new Audio(tone); // Create Audio instance for tone
 
   const firsttime = useMemo(() => "true", []);
 
@@ -47,16 +49,18 @@ function Home() {
     newData.forEach((item) => {
       if (item.type === "valuebadi") {
         if (!selectedTicker || selectedTicker.tick !== item.tick) {
-      // console.log(item.tick +item.unitPrice.toFixed(4) , item.quantity , item.totalPrice)
-
-      toast.error(
-        <>
-          <div>Ticker: {item.tick}</div>
-          <div>Unit Price: {item.unitPrice.toFixed(4)}</div>
-          <div>Quantity: {item.quantity}</div>
-          <div>Total Price: {item.totalPrice.toFixed(4)}</div>
-        </>
-      );
+          // console.log(item.tick +item.unitPrice.toFixed(4) , item.quantity , item.totalPrice)
+          audio.play().catch((err) => {
+            console.error("Error playing audio:", err);
+          });
+          toast.error(
+            <>
+              <div>Ticker: {item.tick}</div>
+              <div>Unit Price: {item.unitPrice.toFixed(4)}</div>
+              <div>Quantity: {item.quantity}</div>
+              <div>Total Price: {item.totalPrice.toFixed(4)}</div>
+            </>
+          );
           updatedTicker = item;
         }
       }
@@ -80,14 +84,19 @@ function Home() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Page Heading */}
-      <header className="bg-blue-600 text-white py-4 px-6 shadow-md">
+      {/* <header className="bg-blue-600 text-white py-4 px-6 shadow-md">
         <h1 className="text-3xl font-bold text-center">BRC20 Dashboard</h1>
-      </header>
+      </header> */}
 
       <main className="flex-1 flex flex-col lg:flex-row gap-6 lg:p-6">
         {/* Table Section */}
-        <div className="flex-1 bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-bold mb-4">BRC20 Data</h2>
+        <div className="flex-1 bg-white shadow rounded-lg p-">
+          <div className="flex justify-around">
+            <h2 className="text-xl font-bold mb-4">BRC20 Data</h2>
+            <button onClick={() => setToggleShow(!toggleShow)}>
+              {toggleShow ? "Hide" : "Show"}
+            </button>
+          </div>
           {Array.isArray(data) && data.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border-collapse">
@@ -107,10 +116,14 @@ function Home() {
                       className="border-b hover:bg-gray-50 transition"
                     >
                       <td className="py-3 px-4">{item.tick}</td>
-                      <td className="py-3 px-4">{item.unitPrice.toFixed(4) || "N/A"}</td>
-                     
+                      <td className="py-3 px-4">
+                        {item.unitPrice.toFixed(4) || "N/A"}
+                      </td>
+
                       <td className="py-3 px-4">{item.quantity}</td>
-                      <td className="py-3 px-4">{item.totalPrice.toFixed(4) || "N/A"}</td>
+                      <td className="py-3 px-4">
+                        {item.totalPrice.toFixed(4) || "N/A"}
+                      </td>
                       <td className="py-3 px-4">
                         {item.inscriptionNumber || "N/A"}
                       </td>
@@ -128,28 +141,27 @@ function Home() {
 
         {/* Selected Ticker Sidebar */}
         {selectedTicker && (
-  <div className="lg:w-1/3 bg-blue-900 text-white p-6 rounded-lg shadow-lg">
-    <h2 className="text-2xl font-bold mb-4 blinking-text">
-      NOTCE - Selected Ticker: {selectedTicker.tick}
-    </h2>
-    <p className="mb-2">
-      <strong>Quantity:</strong> {selectedTicker.quantity}
-    </p>
-    <p className="mb-2">
-      <strong>Unit Price:</strong> {selectedTicker.unitPrice.toFixed(4)}
-    </p>
-    <p className="mb-2">
-      <strong>Total Price:</strong> {selectedTicker.totalPrice.toFixed(4)}
-    </p>
- 
-  </div>
-)}
-
+          <div className="lg:w-1/3 bg-blue-900 text-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4 blinking-text">
+              NOTCE - Selected Ticker: {selectedTicker.tick}
+            </h2>
+            <p className="mb-2">
+              <strong>Quantity:</strong> {selectedTicker.quantity}
+            </p>
+            <p className="mb-2">
+              <strong>Unit Price:</strong> {selectedTicker.unitPrice.toFixed(4)}
+            </p>
+            <p className="mb-2">
+              <strong>Total Price:</strong>{" "}
+              {selectedTicker.totalPrice.toFixed(4)}
+            </p>
+          </div>
+        )}
       </main>
 
-
-
-      <UnisatRequirmentShow fetchDataAll={fetchDataAll} forApi={"unisat"} />
+      {toggleShow && (
+        <UnisatRequirmentShow fetchDataAll={fetchDataAll} forApi={"unisat"} />
+      )}
     </div>
   );
 }

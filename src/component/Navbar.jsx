@@ -20,6 +20,11 @@ const Navbar = () => {
             className="text-white hover:text-gray-300 transition duration-200">
             Magic Eden
           </a>
+          <a
+            href="/combine" 
+            className="text-white hover:text-gray-300 transition duration-200">
+            Combine Page
+          </a>
         </div>
       </div>
     </nav>
