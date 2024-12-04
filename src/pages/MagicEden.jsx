@@ -37,7 +37,12 @@ const App = () => {
   }, [firsttime]); // Dependency array ensures effect runs when 'firsttime' changes
 
   if (allData.length === 0) {
-    return <div>Loading...</div>;
+    
+    return <>
+
+    <UnisatRequirmentShow fetchDataAll={fetchData} forApi={"magic"} />
+<div className=" flex items-center justify-center w-full mt-[20px]">Loading...</div>
+    </>;
   }
 
   return (
