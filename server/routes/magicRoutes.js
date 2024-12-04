@@ -2,8 +2,7 @@ const express = require("express")
 const router = express.Router()
 const axios = require("axios")
 let requirements = {
-  DOGGOTOTHEMOON:"$10",
-  PUPSWORLDPEACE:null
+
 
 };
 // Hardcoded Magic Eden API key

@@ -14,7 +14,7 @@ const App = () => {
   const fetchData = async (firsttime = "false") => {
     try {
       const response = await axios.get(
-        `http://localhost:3005/magic/magic-eden/${firsttime}`
+        `https://crypto.mahitechnocrafts.in/magic/magic-eden/${firsttime}`
       );
       setAllData(response.data); // Assuming response.data is an array of datasets
       setConvertion(response.data[0].conversionFactor);
