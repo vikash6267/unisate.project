@@ -2,7 +2,8 @@ const express = require("express")
 const router = express.Router()
 const axios = require("axios")
 let requirements = {
-
+  DOGGOTOTHEMOON:"$10",
+  PUPSWORLDPEACE:null
 
 };
 // Hardcoded Magic Eden API key
@@ -50,62 +51,138 @@ async function getConversionFactor() {
     }
   }
 // Route to get Rune collection stats and convert to Excel
+// async function getMagicEdenData(tick, prevData, value, firsttime) {
+//   const url = 'https://api-mainnet.magiceden.dev/v2/ord/btc/runes/collection_stats/search';
+//   const headers = {
+//     'Authorization': `Bearer ${MAGIC_EDEN_API_KEY}`,
+//   };
+//   const params = {
+//     window: '1d',
+//     limit: 200,
+//     sort: 'volume',
+//     direction: 'desc',
+//     allCollections: true,
+//   };
+
+//   try {
+//     const response = await axios.get(url, { headers, params });
+//     const data = response.data.runes.find(rune => rune.etching.runeTicker === tick);
+
+//     if (!data) {
+//       console.error(`No data found for tick: ${tick}`);
+//       return null;
+//     }
+
+//     if (
+//       !prevData[tick] ||
+//       prevData[tick][0] !== data.runeNumber ||
+//       prevData[tick][1] !== data.unitPriceSats
+//     ) {
+//       prevData[tick] = [data.runeNumber, data.unitPriceSats];
+
+// 	  const conversionFactor = await getConversionFactor();
+
+//       if (firsttime === 'true') {
+//         return {
+//           tick: data.etching.runeTicker,
+//           runeName: data.etching.runeName,
+//           divisibility: data.divisibility,
+//           unitPrice: data.unitPriceSats * conversionFactor,
+//           marketCap: data.marketCap,
+//         };
+//       }
+// // console.log(value)
+//       if (value && (data.unitPriceSats * conversionFactor) < parseFloat(value.slice(1))) {
+//         return {
+//           type: 'valuebadi',
+//           tick: data.etching.runeTicker,
+//           unitPrice: data.unitPriceSats * conversionFactor,
+//           marketCap: data.marketCap,
+//         };
+//       } else {
+//         return {
+//           tick: data.etching.runeTicker,
+//           runeName: data.etching.runeName,
+//           divisibility: data.divisibility,
+//           unitPrice: data.unitPriceSats * conversionFactor,
+//           marketCap: data.marketCap,
+//         };
+//       }
+//     }
+//   } catch (error) {
+//     console.error('Error fetching Magic Eden data:', error);
+//     return null;
+//   }
+// }
+
+
+
 async function getMagicEdenData(tick, prevData, value, firsttime) {
-  const url = 'https://api-mainnet.magiceden.dev/v2/ord/btc/runes/collection_stats/search';
+  const statsUrl = 'https://api-mainnet.magiceden.dev/v2/ord/btc/runes/collection_stats/search';
+  const ordersUrl = `https://api-mainnet.magiceden.dev/v2/ord/btc/runes/orders/${tick}`;
   const headers = {
     'Authorization': `Bearer ${MAGIC_EDEN_API_KEY}`,
   };
-  const params = {
+  const statsParams = {
     window: '1d',
     limit: 200,
     sort: 'volume',
     direction: 'desc',
     allCollections: true,
   };
+  const ordersParams = {
+    side: 'sell', // Fetch sell orders
+    sort: 'unitPriceAsc', // Sort by ascending unit price
+    offset: 0, // Starting from the first page
+    includePending: false, // Exclude pending orders
+  };
 
   try {
-    const response = await axios.get(url, { headers, params });
-    const data = response.data.runes.find(rune => rune.etching.runeTicker === tick);
+    // Fetch stats for the collection
+    const statsResponse = await axios.get(statsUrl, { headers, params: statsParams });
+    const statsData = statsResponse.data.runes.find(rune => rune.etching.runeTicker === tick);
 
-    if (!data) {
-      console.error(`No data found for tick: ${tick}`);
+    if (!statsData) {
+      console.error(`No stats data found for tick: ${tick}`);
       return null;
     }
 
+    // Fetch orders for the specific rune
+    const ordersResponse = await axios.get(ordersUrl, { headers, params: ordersParams });
+    const ordersData = ordersResponse.data;
+
+    if (!ordersData || ordersData.length === 0) {
+      console.error(`No orders found for tick: ${tick}`);
+      return null;
+    }
+
+    // Extract and calculate data
     if (
       !prevData[tick] ||
-      prevData[tick][0] !== data.runeNumber ||
-      prevData[tick][1] !== data.unitPriceSats
+      prevData[tick][0] !== statsData.runeNumber ||
+      prevData[tick][1] !== statsData.unitPriceSats
     ) {
-      prevData[tick] = [data.runeNumber, data.unitPriceSats];
+      prevData[tick] = [statsData.runeNumber, statsData.unitPriceSats];
+      const conversionFactor = await getConversionFactor();
 
-	  const conversionFactor = await getConversionFactor();
+     
+      const result = {
+       runes:ordersData,
+       conversionFactor:conversionFactor
+      };
 
       if (firsttime === 'true') {
-        return {
-          tick: data.etching.runeTicker,
-          runeName: data.etching.runeName,
-          divisibility: data.divisibility,
-          unitPrice: data.unitPriceSats * conversionFactor,
-          marketCap: data.marketCap,
-        };
+        return result;
       }
-// console.log(value)
-      if (value && (data.unitPriceSats * conversionFactor) < parseFloat(value.slice(1))) {
+
+      if (value && (statsData.unitPriceSats * conversionFactor) < parseFloat(value.slice(1))) {
+      console.log("enter")
         return {
           type: 'valuebadi',
-          tick: data.etching.runeTicker,
-          unitPrice: data.unitPriceSats * conversionFactor,
-          marketCap: data.marketCap,
+          ...result,
         };
       } else {
-        return {
-          tick: data.etching.runeTicker,
-          runeName: data.etching.runeName,
-          divisibility: data.divisibility,
-          unitPrice: data.unitPriceSats * conversionFactor,
-          marketCap: data.marketCap,
-        };
+        return result;
       }
     }
   } catch (error) {
@@ -117,7 +194,8 @@ async function getMagicEdenData(tick, prevData, value, firsttime) {
 router.get('/magic-eden/:firstt', async (req, res) => {
   const prevData = {};
   const results = [];
-  const firsttValue = req.params.firstt;
+  const firsttValue = "false";
+  // const firsttValue = req.params.firstt;
 
 
   // Replace `requirements` with your logic for tickers and values

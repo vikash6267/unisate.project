@@ -10,16 +10,16 @@ const Navbar = () => {
 
         {/* Links */}
         <div className="space-x-4">
-          <Link
-            to="/" 
+          <a
+            href="/" 
             className="text-white hover:text-gray-300 transition duration-200">
             UniSat
-          </Link>
-          <Link
-            to="/magic" 
+          </a>
+          <a
+            href="/magic" 
             className="text-white hover:text-gray-300 transition duration-200">
             Magic Eden
-          </Link>
+          </a>
         </div>
       </div>
     </nav>

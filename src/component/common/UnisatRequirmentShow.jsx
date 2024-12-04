@@ -11,7 +11,7 @@ function UnisatRequirmentShow({fetchDataAll,forApi}) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`https://crypto.mahitechnocrafts.in/${forApi}/requirements`);
+      const response = await axios.get(`http://localhost:3005/${forApi}/requirements`);
       setData(response.data);
     } catch (error) {
       console.error('Error fetching data:', error.message);
@@ -39,11 +39,14 @@ function UnisatRequirmentShow({fetchDataAll,forApi}) {
       };
   
       // Send the formatted data to the API
-      await axios.post(`https://crypto.mahitechnocrafts.in/${forApi}/requirements`, formattedRequirement);
+      await axios.post(`http://localhost:3005/${forApi}/requirements`, formattedRequirement);
   
       // Refresh the data and reset modal
       fetchData();
-      fetchDataAll("true");
+    
+
+        fetchDataAll("true");
+      
       setIsModalOpen(false);
       setNewRequirement({ key: '', value: '' });
     } catch (error) {
@@ -56,8 +59,8 @@ function UnisatRequirmentShow({fetchDataAll,forApi}) {
 
   const handleDeleteRequirement = async (key) => {
     try {
-      await axios.delete(`https://crypto.mahitechnocrafts.in/${forApi}/requirements/${key}`);
-      fetchData();
+      await axios.delete(`http://localhost:3005/${forApi}/requirements/${key}`);
+      fetchData("true");
     } catch (error) {
       console.error('Error deleting requirement:', error.message);
     }
@@ -72,7 +75,7 @@ console.log(forApi)
     <div className="p-4 sm:p-6 bg-white shadow rounded-lg space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center sm:text-left">
-          BRC20 Requirement Show
+          {forApi} Requirement Show
         </h1>
         <button
           onClick={() => setIsModalOpen(true)}
