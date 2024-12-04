@@ -13,7 +13,7 @@ const App = () => {
   const fetchData = async (firsttime = "false") => {
     try {
       const response = await axios.get(
-        `http://localhost:3005/magic/magic-eden/${firsttime}`
+        `https://crypto.mahitechnocrafts.in/magic/magic-eden/${firsttime}`
       );
       const conversionFactor = response.data[0]?.conversionFactor || 1;
       setConvertion(conversionFactor);
