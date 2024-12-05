@@ -8,7 +8,7 @@ function Home() {
   const [data, setData] = useState([]);
   const [selectedTicker, setSelectedTicker] = useState(null);
   const [toggleShow, setToggleShow] = useState(false);
-  const [isBlinking, setIsBlinking] = useState(false);  // State for blinking
+  const [blinkingTickers, setBlinkingTickers] = useState([]); // New state for blinking
   const audio = useMemo(() => new Audio(tone), []); // Create Audio instance for tone
   const [toggleSound, setToggleSound] = useState(true);
 
@@ -35,38 +35,63 @@ function Home() {
     }
   };
 
+
+
   const updateData = (newData) => {
     setData((prevData) => {
       return prevData.map((oldItem) => {
         const updatedItem = newData.find((newItem) => newItem.tick === oldItem.tick);
         if (updatedItem) {
-          const priceChangePercentage =
-            ((updatedItem.unitPrice - oldItem.unitPrice) / oldItem.unitPrice) * 100;
-
-          if (Math.abs(priceChangePercentage) >= 5) {
-            updatedItem.priceChange = priceChangePercentage > 0 ? 'increase' : 'decrease';
-            triggerBlinkingAndSound();
-          } else {
-            updatedItem.priceChange = null;
+          // Calculate the price change percentage
+          const priceChangePercentage = ((updatedItem.unitPrice - oldItem.unitPrice) / oldItem.unitPrice) * 100;
+  
+          // Trigger an alert if the price change is more than 5%
+          if (Math.abs(priceChangePercentage) > 5) {
+            alert(`Price changed by ${priceChangePercentage.toFixed(2)}%.`);
           }
-
-          return updatedItem;
+  
+          // Determine price change type (increase or decrease)
+          const priceChange = Number(updatedItem.unitPrice).toFixed(4) > Number(oldItem.unitPrice).toFixed(4) ? 'increase' :
+          Number(updatedItem.unitPrice).toFixed(4) < Number(oldItem.unitPrice).toFixed(4)  ? 'decrease' : null;
+  
+          // Set color change logic based on price change type
+          const colorChange = priceChange === 'increase' ? 'green' : priceChange === 'decrease' ? 'red' : 'black';
+  
+          // Blink the tickers when price changes
+          if (priceChange) {
+            if(toggleSound){
+              audio.play().catch((err) => {
+                console.error("Error playing audio:", err);
+              });
+            }
+            setBlinkingTickers((prev) => [...prev, updatedItem.tick]); // Start blinking
+            setTimeout(() => {
+              setBlinkingTickers((prev) => prev.filter(tick => tick !== updatedItem.tick)); // Stop blinking after 3 seconds
+            }, 3000);
+          }
+  
+          return {
+            ...updatedItem,
+            priceChange,
+            color: colorChange  // Add color property for style changes
+          };
         }
         return oldItem;
       });
     });
   };
+  
 
   const checkForValueBadi = (newData) => {
     let updatedTicker = null;
     newData.forEach((item) => {
       if (item.type === "valuebadi") {
         if (!selectedTicker || selectedTicker.tick !== item.tick) {
-          if(toggleSound){
-            audio.play().catch((err) => {
-              console.error("Error playing audio:", err);
-            });
-          }
+      if(toggleSound){
+        audio.play().catch((err) => {
+          console.error("Error playing audio:", err);
+        });
+      }
           toast.error(
             <>
               <div>Ticker: {item.tick}</div>
@@ -83,18 +108,6 @@ function Home() {
     if (updatedTicker && updatedTicker.tick !== selectedTicker?.tick) {
       setSelectedTicker(updatedTicker);
     }
-  };
-
-  const triggerBlinkingAndSound = () => {
-    setIsBlinking(true);
-    if(toggleSound){
-      audio.play().catch((err) => {
-        console.error("Error playing audio:", err);
-      });
-    }
-    setTimeout(() => {
-      setIsBlinking(false);  // Stop blinking after 3 seconds
-    }, 3000);
   };
 
   useEffect(() => {
@@ -119,10 +132,9 @@ function Home() {
             >
               {toggleShow ? "Hide" : "Show"}
             </button>
-
-            <button onClick={() => setToggleSound(!toggleSound)}>
-              {toggleSound ? "Mute" : "Unmute"}
-            </button>
+               <button onClick={() => setToggleSound(!toggleSound)}>
+            {toggleSound ? "Mute" : "Unmute"}
+          </button>
           </div>
           {Array.isArray(data) && data.length > 0 ? (
             <div className="overflow-x-auto">
@@ -143,7 +155,9 @@ function Home() {
                       className={`border-b hover:bg-gray-50 transition ${item.priceChange === 'increase' ? 'bg-green-100' : item.priceChange === 'decrease' ? 'bg-red-100' : ''}`}
                     >
                       <td className="py-3 px-4">{item.tick}</td>
-                      <td className={`py-3 px-4 ${item.priceChange === 'increase' ? 'text-green-600' : item.priceChange === 'decrease' ? 'text-red-600' : ''}`}>
+                      <td
+                        className={`py-3 px-4 ${item.priceChange === 'increase' ? 'text-green-600' : item.priceChange === 'decrease' ? 'text-red-600' : ''} ${blinkingTickers.includes(item.tick) ? 'blink' : ''}`}
+                      >
                         {item.unitPrice.toFixed(4) || "N/A"}
                       </td>
                       <td className="py-3 px-4">{item.quantity}</td>
@@ -166,8 +180,8 @@ function Home() {
         </div>
 
         {selectedTicker && (
-          <div className={`lg:w-1/3 bg-blue-900 text-white p-6 rounded-lg shadow-lg ${isBlinking ? 'animate-pulse' : ''}`}>
-            <h2 className="text-2xl font-bold mb-4">
+          <div className="lg:w-1/3 bg-blue-900 text-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4 animate-pulse">
               NOTICE - Selected Ticker: {selectedTicker.tick}
             </h2>
             <p className="mb-2">

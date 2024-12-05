@@ -31,25 +31,32 @@ const App = () => {
     if (orders.length >= 2) {
       const firstOrder = orders[0];
       const secondOrder = orders[1];
-  
+
       const firstPrice = firstOrder.formattedUnitPrice;
       const secondPrice = secondOrder.formattedUnitPrice;
-  
+
+
+      if(parseFloat(secondPrice).toFixed(2) !== parseFloat(firstPrice).toFixed(2) ){
+        setBlinkingRow(rune); // Set the rune for blinking
+        setTimeout(() => setBlinkingRow(null), 3000); // Stop blinking after 3 seconds
+
+      }
       // Calculate percentage difference
       const percentageChange = ((secondPrice - firstPrice) / firstPrice) * 100;
-  
+
       // Check if the change is greater than or equal to ±5%
       if (Math.abs(percentageChange) >= 5) {
         // Play tone
-        if(toggleSound){
-
-          audio.play().catch((err) => console.error("Error playing audio:", err));
+        if (toggleSound) {
+          audio
+            .play()
+            .catch((err) => console.error("Error playing audio:", err));
         }
-  
+
         // Highlight the row
         setBlinkingRow(rune); // Set the rune for blinking
         setTimeout(() => setBlinkingRow(null), 3000); // Stop blinking after 3 seconds
-  
+
         // Show toast notification
         toast.info(
           <>
@@ -62,12 +69,12 @@ const App = () => {
       }
     }
   };
-  
+
   const checkForValueBadi = (newData) => {
     if (newData.type === "valuebadi") {
       const order = newData.runes.orders[0];
-      if(convertion === 0){
-        return null
+      if (convertion === 0) {
+        return null;
       }
       if (!order) return;
       const formattedUnitPrice = order?.formattedUnitPrice || 0;
@@ -77,9 +84,7 @@ const App = () => {
       toast.error(
         <>
           <div>Ticker: {order.rune || "N/A"}</div>
-          <div>
-            Unit Price: {(formattedUnitPrice * convertion).toFixed(4)}
-          </div>
+          <div>Unit Price: {(formattedUnitPrice * convertion).toFixed(4)}</div>
         </>
       );
     }
@@ -115,22 +120,20 @@ const App = () => {
       return acc;
     }, {});
 
-
-
   return (
     <div>
       <div className="mx-auto p-1 lg:p-6">
-      <div className="flex justify-around">
+        <div className="flex justify-around">
           <h2 className="text-xl font-bold mb-4">Magic Eden Data</h2>
-          <button 
-              onClick={() => setToggleShow(!toggleShow)}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-            >
-              {toggleShow ? "Hide" : "Show"}
-            </button>
+          <button
+            onClick={() => setToggleShow(!toggleShow)}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          >
+            {toggleShow ? "Hide" : "Show"}
+          </button>
           <button onClick={() => setToggleSound(!toggleSound)}>
-              {toggleSound ? "Mute" : "Unmute"}
-            </button>
+            {toggleSound ? "Mute" : "Unmute"}
+          </button>
         </div>
         <div className="overflow-x-auto border border-gray-300 rounded-lg">
           <table className="table-auto border-collapse w-full text-sm">
@@ -146,9 +149,7 @@ const App = () => {
             <tbody>
               {Object.entries(groupedOrders).map(([rune, orders], index) => (
                 <React.Fragment key={index}>
-                  <tr
-                   
-                  >
+                  <tr>
                     <td
                       className="border border-gray-300 px-4 py-2 font-bold"
                       rowSpan={orders.length + 1}
@@ -161,14 +162,18 @@ const App = () => {
                       <td className="border border-gray-300 px-4 py-2">
                         {Number(order.formattedAmount).toFixed(5)}
                       </td>
-                      <td  className={
-                      blinkingRow === rune
-                        ? "blinking" // Apply blinking class
-                        : "hover:bg-gray-50"
-                    }>
+                      <td
+                       className="border border-gray-300 px-4 py-2"
+                      >
                         {(order.formattedUnitPrice * convertion).toFixed(4)}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td 
+                       className={
+                          blinkingRow === rune
+                            ? "blinking border border-gray-300 px-4 py-2" // Apply blinking class
+                            : "hover:bg-gray-50 border border-gray-300 px-4 py-2"
+                        }
+                      >
                         {Number(order.formattedUnitPrice).toFixed(2)}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
