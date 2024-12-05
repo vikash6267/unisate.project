@@ -94,8 +94,8 @@ const api_keys = [
   
   
   const coinApi = [
-      '52b6f479-de02-4b92-84be-f285670e7a6b',
-      '2bc4f529-dd2d-4dbe-8916-a779c679c02b'
+      'ff96c853-b9ab-4036-b97a-bdd1e87e8b38',
+      'abc4f739-d52d-4127-83a9-ddaf55f5ab30'
   ]
   const cAPi = {
       [Symbol.iterator]() {

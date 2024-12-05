@@ -2,12 +2,15 @@ import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import UnisatRequirmentShow from "../component/common/UnisatRequirmentShow";
 import { toast } from "react-toastify";
-import tone from "../assests/tone.mp3"
+import tone from "../assests/tone.mp3";
+
 function Home() {
   const [data, setData] = useState([]);
   const [selectedTicker, setSelectedTicker] = useState(null);
   const [toggleShow, setToggleShow] = useState(false);
-  const audio = new Audio(tone); // Create Audio instance for tone
+  const [isBlinking, setIsBlinking] = useState(false);  // State for blinking
+  const audio = useMemo(() => new Audio(tone), []); // Create Audio instance for tone
+  const [toggleSound, setToggleSound] = useState(true);
 
   const firsttime = useMemo(() => "true", []);
 
@@ -28,19 +31,29 @@ function Home() {
         console.error("Received data is not an array", response.data);
       }
     } catch (error) {
-      console.error("Error fetching data:", error.message);
+      console.error("Error fetching data:", error);
     }
   };
 
   const updateData = (newData) => {
     setData((prevData) => {
-      const updatedData = prevData.map((oldItem) => {
-        const updatedItem = newData.find(
-          (newItem) => newItem.tick === oldItem.tick
-        );
-        return updatedItem ? updatedItem : oldItem;
+      return prevData.map((oldItem) => {
+        const updatedItem = newData.find((newItem) => newItem.tick === oldItem.tick);
+        if (updatedItem) {
+          const priceChangePercentage =
+            ((updatedItem.unitPrice - oldItem.unitPrice) / oldItem.unitPrice) * 100;
+
+          if (Math.abs(priceChangePercentage) >= 5) {
+            updatedItem.priceChange = priceChangePercentage > 0 ? 'increase' : 'decrease';
+            triggerBlinkingAndSound();
+          } else {
+            updatedItem.priceChange = null;
+          }
+
+          return updatedItem;
+        }
+        return oldItem;
       });
-      return updatedData;
     });
   };
 
@@ -49,10 +62,11 @@ function Home() {
     newData.forEach((item) => {
       if (item.type === "valuebadi") {
         if (!selectedTicker || selectedTicker.tick !== item.tick) {
-          // console.log(item.tick +item.unitPrice.toFixed(4) , item.quantity , item.totalPrice)
-          audio.play().catch((err) => {
-            console.error("Error playing audio:", err);
-          });
+          if(toggleSound){
+            audio.play().catch((err) => {
+              console.error("Error playing audio:", err);
+            });
+          }
           toast.error(
             <>
               <div>Ticker: {item.tick}</div>
@@ -71,6 +85,18 @@ function Home() {
     }
   };
 
+  const triggerBlinkingAndSound = () => {
+    setIsBlinking(true);
+    if(toggleSound){
+      audio.play().catch((err) => {
+        console.error("Error playing audio:", err);
+      });
+    }
+    setTimeout(() => {
+      setIsBlinking(false);  // Stop blinking after 3 seconds
+    }, 3000);
+  };
+
   useEffect(() => {
     fetchDataAll(firsttime);
 
@@ -83,18 +109,19 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
-      {/* Page Heading */}
-      {/* <header className="bg-blue-600 text-white py-4 px-6 shadow-md">
-        <h1 className="text-3xl font-bold text-center">BRC20 Dashboard</h1>
-      </header> */}
-
       <main className="flex-1 flex flex-col lg:flex-row gap-6 lg:p-6">
-        {/* Table Section */}
-        <div className="flex-1 bg-white shadow rounded-lg p-">
+        <div className="flex-1 bg-white shadow rounded-lg p-6">
           <div className="flex justify-around">
             <h2 className="text-xl font-bold mb-4">BRC20 Data</h2>
-            <button onClick={() => setToggleShow(!toggleShow)}>
+            <button 
+              onClick={() => setToggleShow(!toggleShow)}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+            >
               {toggleShow ? "Hide" : "Show"}
+            </button>
+
+            <button onClick={() => setToggleSound(!toggleSound)}>
+              {toggleSound ? "Mute" : "Unmute"}
             </button>
           </div>
           {Array.isArray(data) && data.length > 0 ? (
@@ -106,20 +133,19 @@ function Home() {
                     <th className="py-3 px-4 text-left">Unit Price</th>
                     <th className="py-3 px-4 text-left">Quantity</th>
                     <th className="py-3 px-4 text-left">Total Price</th>
-                    <th className="py-3 px-4 text-left ">Inscription Number</th>
+                    <th className="py-3 px-4 text-left">Inscription Number</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.map((item, index) => (
                     <tr
                       key={index}
-                      className="border-b hover:bg-gray-50 transition"
+                      className={`border-b hover:bg-gray-50 transition ${item.priceChange === 'increase' ? 'bg-green-100' : item.priceChange === 'decrease' ? 'bg-red-100' : ''}`}
                     >
                       <td className="py-3 px-4">{item.tick}</td>
-                      <td className="py-3 px-4">
+                      <td className={`py-3 px-4 ${item.priceChange === 'increase' ? 'text-green-600' : item.priceChange === 'decrease' ? 'text-red-600' : ''}`}>
                         {item.unitPrice.toFixed(4) || "N/A"}
                       </td>
-
                       <td className="py-3 px-4">{item.quantity}</td>
                       <td className="py-3 px-4">
                         {item.totalPrice.toFixed(4) || "N/A"}
@@ -139,11 +165,10 @@ function Home() {
           )}
         </div>
 
-        {/* Selected Ticker Sidebar */}
         {selectedTicker && (
-          <div className="lg:w-1/3 bg-blue-900 text-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4 blinking-text">
-              NOTCE - Selected Ticker: {selectedTicker.tick}
+          <div className={`lg:w-1/3 bg-blue-900 text-white p-6 rounded-lg shadow-lg ${isBlinking ? 'animate-pulse' : ''}`}>
+            <h2 className="text-2xl font-bold mb-4">
+              NOTICE - Selected Ticker: {selectedTicker.tick}
             </h2>
             <p className="mb-2">
               <strong>Quantity:</strong> {selectedTicker.quantity}
@@ -152,8 +177,7 @@ function Home() {
               <strong>Unit Price:</strong> {selectedTicker.unitPrice.toFixed(4)}
             </p>
             <p className="mb-2">
-              <strong>Total Price:</strong>{" "}
-              {selectedTicker.totalPrice.toFixed(4)}
+              <strong>Total Price:</strong> {selectedTicker.totalPrice.toFixed(4)}
             </p>
           </div>
         )}

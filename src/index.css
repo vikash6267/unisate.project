@@ -21,3 +21,36 @@
     }
   }
   
+
+  @keyframes blink {
+    0% { background-color: yellow; }
+    50% { background-color: red; }
+    100% { background-color: yellow; }
+  }
+  
+  .blinking {
+    animation: blink 0.5s linear infinite;
+  }
+  
+
+  .blinking-text {
+    animation: blink-animation 1s steps(5, start) infinite;
+  }
+  
+  @keyframes blink-animation {
+    to {
+      visibility: hidden;
+    }
+  }
+  
+
+  .blink {
+    animation: blink-animation 1s steps(5, start) infinite;
+  }
+  
+  @keyframes blink-animation {
+    50% {
+      opacity: 0;
+    }
+  }
+  
