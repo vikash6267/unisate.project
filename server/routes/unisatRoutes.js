@@ -94,8 +94,12 @@ const api_keys = [
   
   
   const coinApi = [
-      'ff96c853-b9ab-4036-b97a-bdd1e87e8b38',
-      'abc4f739-d52d-4127-83a9-ddaf55f5ab30'
+    'dc02d1a5-e9bf-4b71-b375-f7696be6ca5d',
+    '1ea139ef-e13e-491b-94ab-b6a5ebe71224',
+  
+    "9b8ebde6-b1dd-4856-b882-a1d692831716",
+    "b4b41335-529a-4b6c-87ac-75200b48c1e0",
+    "d27caece-62b2-4333-8032-c580602ad1ab"
   ]
   const cAPi = {
       [Symbol.iterator]() {
@@ -193,9 +197,9 @@ const api_keys = [
           console.log("working")
           return {
               tick: inscription.tick,
-    
+              conversionFactor:conversionFactor,
               quantity: inscription.amount,
-              unitPrice: inscription.unitPrice * conversionFactor,
+              unitPrice: inscription.unitPrice ,
               totalPrice: inscription.price * conversionFactor,
               inscriptionNumber: inscription.inscriptionNumber,
             };
@@ -208,8 +212,9 @@ const api_keys = [
             return {
               type: "valuebadi",
               tick: inscription.tick,
+              conversionFactor:conversionFactor,
               quantity: inscription.amount,
-              unitPrice: inscription.unitPrice * conversionFactor,
+              unitPrice: inscription.unitPrice ,
               totalPrice: inscription.price * conversionFactor,
               inscriptionNumber: inscription.inscriptionNumber,
             };
@@ -217,9 +222,10 @@ const api_keys = [
         } else {
           return {
             tick: inscription.tick,
+            conversionFactor:conversionFactor,
   
             quantity: inscription.amount,
-            unitPrice: inscription.unitPrice * conversionFactor,
+            unitPrice: inscription.unitPrice,
             totalPrice: inscription.price * conversionFactor,
             inscriptionNumber: inscription.inscriptionNumber,
           };

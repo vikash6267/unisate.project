@@ -9,10 +9,11 @@ let requirements = {
 const MAGIC_EDEN_API_KEY = 'abd05538-4a51-4b40-89ac-d9fad0649ee0';
 let convertionBackup = "0.0"
 const coinApi = [
-	'52b6f479-de02-4b92-84be-f285670e7a6b',
-	'2bc4f529-dd2d-4dbe-8916-a779c679c02b',
+	'f8016acf-a310-49ef-b464-1a9609302a42',
+	'954619a1-1502-4aa6-87dd-fa9383d39f18',
 
-  "72023931-d329-442c-9807-2d676521f1a6",
+  "467c56b6-fb74-4fb6-834e-5a9c9231a0ef",
+  "63769aab-a8ec-4795-a8d0-19a26c0102ef"
   
 ]
 const cAPi = {
