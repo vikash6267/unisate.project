@@ -17,21 +17,31 @@ function App() {
 
   const checkLoginStatus = () => {
     const storedData = localStorage.getItem("loginData");
+    const currentPath = window.location.pathname; // Get the current path
+    
     if (storedData) {
       const { email, password, expiry } = JSON.parse(storedData);
       const currentTime = new Date().getTime();
       if (currentTime < expiry) {
         setIsLoggedIn(true);
+        if (currentPath === "/login") {
+          navigate("/"); // Redirect to home if already logged in
+        }
       } else {
         localStorage.removeItem("loginData");
         setIsLoggedIn(false);
-        navigate("/login");
+        if (currentPath !== "/login") {
+          navigate("/login");
+        }
       }
     } else {
       setIsLoggedIn(false);
-      navigate("/login");
+      if (currentPath !== "/login") {
+        navigate("/login");
+      }
     }
   };
+  
 
   const CheckLoginStatus = ({ children }) => {
     if (isLoggedIn) {
