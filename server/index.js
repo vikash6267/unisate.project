@@ -9,6 +9,7 @@ app.use(cors());
 // Default requirements
 
 
+
 app.use("/unisat",require("./routes/unisatRoutes"))
 app.use("/magic",require("./routes/magicRoutes"))
 

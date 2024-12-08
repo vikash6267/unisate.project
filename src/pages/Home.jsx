@@ -19,7 +19,9 @@ function Home() {
       const response = await axios.get(
         `https://crypto.mahitechnocrafts.in/unisat/auctions/${firsttime}`
       );
-      console.log(response)
+  
+      
+      console.log(response);
 
       if (Array.isArray(response.data)) {
         if (firsttime === "true") {
@@ -36,7 +38,7 @@ function Home() {
     }
   };
 
-  const updateData = (newData) => {
+  const updateData = async (newData) => {
     setData((prevData) => {
       return prevData.map((oldItem) => {
         const updatedItem = newData.find(
@@ -49,8 +51,41 @@ function Home() {
             100;
 
           // Trigger an alert if the price change is more than 5%
-          if (Math.abs(priceChangePercentage) > 5) {
-            alert(`Price changed by ${priceChangePercentage.toFixed(2)}%.`);
+          if (Math.abs(priceChangePercentage) > 4) {
+
+
+              if (toggleSound) {
+              audio.play().catch((err) => {
+                console.error("Error playing audio:", err);
+              });
+            }
+
+             axios.post(
+              "https://crypto.mahitechnocrafts.in/unisat/tbot",
+              {
+                message: `
+                 Ticker: ${updatedItem.tick}
+                  Unit Price: ${updatedItem.unitPrice.toFixed(4)}
+                  Quantity: ${updatedItem.quantity}
+                  Total Price: ${updatedItem.totalPrice.toFixed(4)}
+                  Percentage: Price changed by ${priceChangePercentage.toFixed(2)}%
+                `
+              }
+            );
+            
+            toast.error(
+              <>
+                <div>Ticker: {updatedItem.tick}</div>
+                <div>Unit Price: {updatedItem.unitPrice.toFixed(4)}</div>
+                <div>Quantity: {updatedItem.quantity}</div>
+                <div>Total Price: {updatedItem.totalPrice.toFixed(4)}</div>
+                <div>
+                  Percantage:{" "}
+                  {`Price changed by ${priceChangePercentage.toFixed(2)}%`}
+                </div>
+              </>
+            );
+            // alert(`Price changed by ${priceChangePercentage.toFixed(2)}%.`);
           }
 
           // Determine price change type (increase or decrease)
@@ -73,11 +108,7 @@ function Home() {
 
           // Blink the tickers when price changes
           if (priceChange) {
-            if (toggleSound) {
-              audio.play().catch((err) => {
-                console.error("Error playing audio:", err);
-              });
-            }
+          
             setBlinkingTickers((prev) => [...prev, updatedItem.tick]); // Start blinking
             setTimeout(() => {
               setBlinkingTickers((prev) =>
@@ -139,40 +170,40 @@ function Home() {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <main className="flex-1 flex flex-col lg:flex-row gap-6 lg:p-6">
         <div className="flex-1 bg-white shadow rounded-lg p-6">
-        <div className="flex justify-between items-center px-6 py-4 bg-gray-100 rounded-md shadow-md">
-          <h2 className="text-xl font-bold">BRC20</h2>
+          <div className="flex justify-between items-center px-6 py-4 bg-gray-100 rounded-md shadow-md">
+            <h2 className="text-xl font-bold">BRC20</h2>
 
-          <div className="flex space-x-4">
-            {/* Show/Hide Button */}
-            <button
-              onClick={() => setToggleShow(!toggleShow)}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-            >
-              {toggleShow ? "Hide" : "Show"}
-            </button>
-
-            {/* Mute/Unmute Button */}
-            <div className="flex items-center space-x-2">
+            <div className="flex space-x-4">
+              {/* Show/Hide Button */}
               <button
-                onClick={() => setToggleSound(!toggleSound)} // Toggle state
-                className={`px-4 py-2 rounded-md text-white font-semibold focus:outline-none transition-all 
+                onClick={() => setToggleShow(!toggleShow)}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+              >
+                {toggleShow ? "Hide" : "Show"}
+              </button>
+
+              {/* Mute/Unmute Button */}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setToggleSound(!toggleSound)} // Toggle state
+                  className={`px-4 py-2 rounded-md text-white font-semibold focus:outline-none transition-all 
           ${
             toggleSound
               ? "bg-red-500 hover:bg-red-600"
               : "bg-green-500 hover:bg-green-600"
           }`}
-              >
-                {toggleSound ? "Mute" : "Unmute"} {/* Dynamic text */}
-              </button>
-              <p className="text-sm text-gray-600">
-                Sound:{" "}
-                <span className="font-bold">
-                  {toggleSound ? "Enabled" : "Disabled"}
-                </span>
-              </p>
+                >
+                  {toggleSound ? "Mute" : "Unmute"} {/* Dynamic text */}
+                </button>
+                <p className="text-sm text-gray-600">
+                  Sound:{" "}
+                  <span className="font-bold">
+                    {toggleSound ? "Enabled" : "Disabled"}
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
-        </div>
           {Array.isArray(data) && data.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border-collapse">
@@ -209,7 +240,8 @@ function Home() {
                           blinkingTickers.includes(item.tick) ? "blink" : ""
                         }`}
                       >
-                        {(item.unitPrice * item.conversionFactor).toFixed(4) || "N/A"}
+                        {(item.unitPrice * item.conversionFactor).toFixed(4) ||
+                          "N/A"}
                       </td>
                       <td className="py-3 px-4">{item.quantity}</td>
                       <td className="py-3 px-4">

@@ -34,8 +34,8 @@ const App = () => {
       const firstOrder = orders[0];
       const secondOrder = orders[1];
 
-      const firstPrice = parseFloat(firstOrder.formattedUnitPrice).toFixed(2);
-      const secondPrice = parseFloat(secondOrder.formattedUnitPrice).toFixed(2);
+      const firstPrice = parseFloat(firstOrder.formattedUnitPrice).toFixed(1);
+      const secondPrice = parseFloat(secondOrder.formattedUnitPrice).toFixed(1);
 
       if (secondPrice !== firstPrice) {
         setBlinkingRow(rune); // Set the rune for blinking
@@ -44,13 +44,9 @@ const App = () => {
 
       // Calculate percentage difference
       const percentageChange = ((secondPrice - firstPrice) / firstPrice) * 100;
-      if (toggleSound) {
-        audio
-          .play()
-          .catch((err) => console.error("Error playing audio:", err));
-      }
+    
       // Check if the change is greater than or equal to ±5%
-      if (Math.abs(percentageChange) >= 5) {
+      if (Math.abs(percentageChange) >= 4) {
         // Play tone
         if (toggleSound) {
           audio
@@ -61,6 +57,18 @@ const App = () => {
         // Highlight the row
         setBlinkingRow(rune); // Set the rune for blinking
         setTimeout(() => setBlinkingRow(null), 3000); // Stop blinking after 3 seconds
+
+        axios.post(
+          "https://crypto.mahitechnocrafts.in/unisat/tbot",
+          {
+            message: `
+             Ticker: ${rune || "N/A"}
+            First Price: ${(firstPrice * convertion).toFixed(4)}
+            Second Price: ${(secondPrice * convertion).toFixed(4)}
+            Change: ${percentageChange.toFixed(2)}%
+            `
+          }
+        );
 
         // Show toast notification
         toast.info(
