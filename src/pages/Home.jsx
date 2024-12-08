@@ -138,6 +138,17 @@ function Home() {
               console.error("Error playing audio:", err);
             });
           }
+          axios.post(
+            "https://crypto.mahitechnocrafts.in/unisat/tbot",
+            {
+              message: `
+               Ticker: ${item.tick}
+                Unit Price: ${item.unitPrice.toFixed(4)}
+                Quantity: ${item.quantity}
+                Total Price: ${item.totalPrice.toFixed(4)}
+                `
+            }
+          );
           toast.error(
             <>
               <div>Ticker: {item.tick}</div>
