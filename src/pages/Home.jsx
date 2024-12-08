@@ -38,95 +38,186 @@ function Home() {
     }
   };
 
-  const updateData = async (newData) => {
-    setData((prevData) => {
-      return prevData.map((oldItem) => {
-        const updatedItem = newData.find(
-          (newItem) => newItem.tick === oldItem.tick
-        );
-        if (updatedItem) {
-          // Calculate the price change percentage
-          const priceChangePercentage =
-            ((updatedItem.unitPrice - oldItem.unitPrice) / oldItem.unitPrice) *
-            100;
+  // const updateData = async (newData) => {
+  //   setData((prevData) => {
+  //     return prevData.map((oldItem) => {
+  //       const updatedItem = newData.find(
+  //         (newItem) => newItem.tick === oldItem.tick
+  //       );
+  //       if (updatedItem) {
+  //         // Calculate the price change percentage
+  //         const priceChangePercentage =
+  //           ((updatedItem.unitPrice - oldItem.unitPrice) / oldItem.unitPrice) *
+  //           100;
 
-          // Trigger an alert if the price change is more than 5%
-          if (Math.abs(priceChangePercentage) > 4) {
+  //         // Trigger an alert if the price change is more than 5%
+  //         if (Math.abs(priceChangePercentage) > 4) {
 
 
-              if (toggleSound) {
-              audio.play().catch((err) => {
-                console.error("Error playing audio:", err);
-              });
-            }
+  //             if (toggleSound) {
+  //             audio.play().catch((err) => {
+  //               console.error("Error playing audio:", err);
+  //             });
+  //           }
 
-             axios.post(
+  //            axios.post(
+  //             "https://crypto.mahitechnocrafts.in/unisat/tbot",
+  //             {
+  //               message: `
+  //                Ticker: ${updatedItem.tick}
+  //                 Unit Price: ${updatedItem.unitPrice.toFixed(4)}
+  //                 Quantity: ${updatedItem.quantity}
+  //                 Total Price: ${updatedItem.totalPrice.toFixed(4)}
+  //                 Percentage: Price changed by ${priceChangePercentage.toFixed(2)}%
+  //               `
+  //             }
+  //           );
+            
+  //           toast.error(
+  //             <>
+  //               <div>Ticker: {updatedItem.tick}</div>
+  //               <div>Unit Price: {updatedItem.unitPrice.toFixed(4)}</div>
+  //               <div>Quantity: {updatedItem.quantity}</div>
+  //               <div>Total Price: {updatedItem.totalPrice.toFixed(4)}</div>
+  //               <div>
+  //                 Percantage:{" "}
+  //                 {`Price changed by ${priceChangePercentage.toFixed(2)}%`}
+  //               </div>
+  //             </>
+  //           );
+  //           // alert(`Price changed by ${priceChangePercentage.toFixed(2)}%.`);
+  //         }
+
+  //         // Determine price change type (increase or decrease)
+  //         const priceChange =
+  //           Number(updatedItem.unitPrice).toFixed(4) >
+  //           Number(oldItem.unitPrice).toFixed(4)
+  //             ? "increase"
+  //             : Number(updatedItem.unitPrice).toFixed(4) <
+  //               Number(oldItem.unitPrice).toFixed(4)
+  //             ? "decrease"
+  //             : null;
+
+  //         // Set color change logic based on price change type
+  //         const colorChange =
+  //           priceChange === "increase"
+  //             ? "green"
+  //             : priceChange === "decrease"
+  //             ? "red"
+  //             : "black";
+
+  //         // Blink the tickers when price changes
+  //         if (priceChange) {
+          
+  //           setBlinkingTickers((prev) => [...prev, updatedItem.tick]); // Start blinking
+  //           setTimeout(() => {
+  //             setBlinkingTickers((prev) =>
+  //               prev.filter((tick) => tick !== updatedItem.tick)
+  //             ); // Stop blinking after 3 seconds
+  //           }, 3000);
+  //         }
+
+  //         return {
+  //           ...updatedItem,
+  //           priceChange,
+  //           color: colorChange, // Add color property for style changes
+  //         };
+  //       }
+  //       return oldItem;
+  //     });
+  //   });
+  // };
+
+  const [notifiedTickers, setNotifiedTickers] = useState({}); // Track network calls by ticker
+
+const updateData = async (newData) => {
+  setData((prevData) => {
+    return prevData.map((oldItem) => {
+      const updatedItem = newData.find(
+        (newItem) => newItem.tick === oldItem.tick
+      );
+      if (updatedItem) {
+        // Calculate the price change percentage
+        const priceChangePercentage =
+          ((updatedItem.unitPrice - oldItem.unitPrice) / oldItem.unitPrice) *
+          100;
+
+        // Trigger an alert if the price change is more than 4%
+        if (Math.abs(priceChangePercentage) > 4) {
+          // Play sound
+          if (toggleSound) {
+            audio.play().catch((err) => console.error("Error playing audio:", err));
+          }
+
+          // Check if a network call has already been made for this ticker
+          if (!notifiedTickers[updatedItem.tick]) {
+            axios.post(
               "https://crypto.mahitechnocrafts.in/unisat/tbot",
               {
                 message: `
-                 Ticker: ${updatedItem.tick}
+                  Ticker: ${updatedItem.tick}
                   Unit Price: ${updatedItem.unitPrice.toFixed(4)}
                   Quantity: ${updatedItem.quantity}
                   Total Price: ${updatedItem.totalPrice.toFixed(4)}
                   Percentage: Price changed by ${priceChangePercentage.toFixed(2)}%
-                `
+                `,
               }
             );
-            
-            toast.error(
-              <>
-                <div>Ticker: {updatedItem.tick}</div>
-                <div>Unit Price: {updatedItem.unitPrice.toFixed(4)}</div>
-                <div>Quantity: {updatedItem.quantity}</div>
-                <div>Total Price: {updatedItem.totalPrice.toFixed(4)}</div>
-                <div>
-                  Percantage:{" "}
-                  {`Price changed by ${priceChangePercentage.toFixed(2)}%`}
-                </div>
-              </>
-            );
-            // alert(`Price changed by ${priceChangePercentage.toFixed(2)}%.`);
+            // Update the state to mark this ticker's network call as sent
+            setNotifiedTickers((prev) => ({
+              ...prev,
+              [updatedItem.tick]: true,
+            }));
           }
 
-          // Determine price change type (increase or decrease)
-          const priceChange =
-            Number(updatedItem.unitPrice).toFixed(4) >
-            Number(oldItem.unitPrice).toFixed(4)
-              ? "increase"
-              : Number(updatedItem.unitPrice).toFixed(4) <
-                Number(oldItem.unitPrice).toFixed(4)
-              ? "decrease"
-              : null;
-
-          // Set color change logic based on price change type
-          const colorChange =
-            priceChange === "increase"
-              ? "green"
-              : priceChange === "decrease"
-              ? "red"
-              : "black";
-
-          // Blink the tickers when price changes
-          if (priceChange) {
-          
-            setBlinkingTickers((prev) => [...prev, updatedItem.tick]); // Start blinking
-            setTimeout(() => {
-              setBlinkingTickers((prev) =>
-                prev.filter((tick) => tick !== updatedItem.tick)
-              ); // Stop blinking after 3 seconds
-            }, 3000);
-          }
-
-          return {
-            ...updatedItem,
-            priceChange,
-            color: colorChange, // Add color property for style changes
-          };
+          // Show toast notification (UI alert every time)
+          toast.error(
+            <>
+              <div>Ticker: {updatedItem.tick}</div>
+              <div>Unit Price: {updatedItem.unitPrice.toFixed(4)}</div>
+              <div>Quantity: {updatedItem.quantity}</div>
+              <div>Total Price: {updatedItem.totalPrice.toFixed(4)}</div>
+              <div>
+                Percentage: {`Price changed by ${priceChangePercentage.toFixed(2)}%`}
+              </div>
+            </>
+          );
         }
-        return oldItem;
-      });
+
+        // Handle blinking and color change
+        const priceChange =
+          updatedItem.unitPrice > oldItem.unitPrice
+            ? "increase"
+            : updatedItem.unitPrice < oldItem.unitPrice
+            ? "decrease"
+            : null;
+
+        const colorChange =
+          priceChange === "increase"
+            ? "green"
+            : priceChange === "decrease"
+            ? "red"
+            : "black";
+
+        if (priceChange) {
+          setBlinkingTickers((prev) => [...prev, updatedItem.tick]); // Start blinking
+          setTimeout(() => {
+            setBlinkingTickers((prev) =>
+              prev.filter((tick) => tick !== updatedItem.tick)
+            );
+          }, 3000); // Stop blinking after 3 seconds
+        }
+
+        return {
+          ...updatedItem,
+          priceChange,
+          color: colorChange,
+        };
+      }
+      return oldItem;
     });
-  };
+  });
+};
 
   const checkForValueBadi = (newData) => {
     let updatedTicker = null;
