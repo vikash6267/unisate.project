@@ -123,8 +123,8 @@ const App = () => {
             {
               message: `
                 Ticker: ${rune || "N/A"}
-                First Price: ${(firstPrice * convertion).toFixed(4)}
-                Second Price: ${(secondPrice * convertion).toFixed(4)}
+                First Sats: ${(firstPrice * convertion).toFixed(4)}
+                Second Sats: ${(secondPrice * convertion).toFixed(4)}
                 Change: ${percentageChange.toFixed(2)}%
               `,
             }
@@ -137,8 +137,8 @@ const App = () => {
         toast.info(
           <>
             <div>Ticker: {rune || "N/A"}</div>
-            <div>First Price: {(firstPrice * convertion).toFixed(4)}</div>
-            <div>Second Price: {(secondPrice * convertion).toFixed(4)}</div>
+            <div>First Sats: {(firstPrice * convertion).toFixed(4)}</div>
+            <div>Second Sats: {(secondPrice * convertion).toFixed(4)}</div>
             <div>Change: {percentageChange.toFixed(2)}%</div>
           </>
         );
