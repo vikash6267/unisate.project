@@ -18,6 +18,7 @@ const App = () => {
       const response = await axios.get(
         `https://crypto.mahitechnocrafts.in/magic/magic-eden/${firsttime}`
       );
+      console.log(response)
       const conversionFactor = response.data[0]?.conversionFactor || 1;
       setConvertion(conversionFactor);
       setAllData(response.data);
@@ -28,63 +29,6 @@ const App = () => {
       console.error("Error fetching data:", error);
     }
   };
-
-  // const handleComparison = (orders, rune) => {
-  //   if (orders.length >= 2) {
-  //     const firstOrder = orders[0];
-  //     const secondOrder = orders[1];
-
-  //     const firstPrice = parseFloat(firstOrder.formattedUnitPrice).toFixed(1);
-  //     const secondPrice = parseFloat(secondOrder.formattedUnitPrice).toFixed(1);
-
-  //     if (secondPrice !== firstPrice) {
-  //       setBlinkingRow(rune); // Set the rune for blinking
-  //       setTimeout(() => setBlinkingRow(null), 3000); // Stop blinking after 3 seconds
-  //     }
-
-  //     // Calculate percentage difference
-  //     const percentageChange = ((secondPrice - firstPrice) / firstPrice) * 100;
-    
-  //     // Check if the change is greater than or equal to ±5%
-  //     if (Math.abs(percentageChange) >= 4) {
-  //       // Play tone
-  //       if (toggleSound) {
-  //         audio
-  //           .play()
-  //           .catch((err) => console.error("Error playing audio:", err));
-  //       }
-
-  //       // Highlight the row
-  //       setBlinkingRow(rune); // Set the rune for blinking
-  //       setTimeout(() => setBlinkingRow(null), 3000); // Stop blinking after 3 seconds
-
-  //       axios.post(
-  //         "https://crypto.mahitechnocrafts.in/unisat/tbot",
-  //         {
-  //           message: `
-  //            Ticker: ${rune || "N/A"}
-  //           First Price: ${(firstPrice * convertion).toFixed(4)}
-  //           Second Price: ${(secondPrice * convertion).toFixed(4)}
-  //           Change: ${percentageChange.toFixed(2)}%
-  //           `
-  //         }
-  //       );
-
-  //       // Show toast notification
-  //       toast.info(
-  //         <>
-  //           <div>Ticker: {rune || "N/A"}</div>
-  //           <div>First Price: {(firstPrice * convertion).toFixed(4)}</div>
-  //           <div>Second Price: {(secondPrice * convertion).toFixed(4)}</div>
-  //           <div>Change: {percentageChange.toFixed(2)}%</div>
-  //         </>
-  //       );
-  //     }
-  //   }
-  // };
-
-
-  // Add this state to store the last notified percentage change
 
 
   const [notifiedTickers, setNotifiedTickers] = useState({}); // To track tickers with sent network calls
@@ -123,8 +67,8 @@ const App = () => {
             {
               message: `
                 Ticker: ${rune || "N/A"}
-                First Sats: ${(firstPrice * convertion).toFixed(4)}
-                Second Sats: ${(secondPrice * convertion).toFixed(4)}
+                First Sats: ${firstPrice.toFixed(4)}
+                Second Sats: ${secondPrice.toFixed(4)}
                 Change: ${percentageChange.toFixed(2)}%
               `,
             }
@@ -161,7 +105,7 @@ const App = () => {
       toast.error(
         <>
           <div>Ticker: {order.rune || "N/A"}</div>
-          <div>Unit Price: {(formattedUnitPrice * convertion).toFixed(4)}</div>
+          <div>Sats : {(formattedUnitPrice * convertion).toFixed(4)}</div>
         </>
       );
     }
