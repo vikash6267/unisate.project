@@ -67,8 +67,8 @@ const App = () => {
             {
               message: `
                 Ticker: ${rune || "N/A"}
-                First Sats: ${firstPrice.toFixed(4)}
-                Second Sats: ${secondPrice.toFixed(4)}
+                First Sats: ${Number(firstPrice).toFixed(4)}
+                Second Sats: ${Number(secondPrice).toFixed(4)}
                 Change: ${percentageChange.toFixed(2)}%
               `,
             }
