@@ -13,7 +13,13 @@ const coinApi = [
 	'954619a1-1502-4aa6-87dd-fa9383d39f18',
 
   "467c56b6-fb74-4fb6-834e-5a9c9231a0ef",
-  "63769aab-a8ec-4795-a8d0-19a26c0102ef"
+  "63769aab-a8ec-4795-a8d0-19a26c0102ef",
+  "c5bdc647-ed45-40df-ac75-531c13047f43",
+  "c36165d9-ccd7-483b-849e-011996d72cf2",
+  "3a6a422f-d348-49d7-8ae7-769ad7feca5f",
+  "64695ec9-0800-482c-9723-9f0a43a2fe5a",
+  "6b52a26c-9f8f-44ca-ae9b-6b06635221ac",
+  "9fae4b91-7265-4088-8c1a-bd14f93679f3",
   
 ]
 const cAPi = {

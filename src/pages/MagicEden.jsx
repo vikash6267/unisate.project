@@ -81,8 +81,8 @@ const App = () => {
         toast.info(
           <>
             <div>Ticker: {rune || "N/A"}</div>
-            <div>First Sats: {(firstPrice * convertion).toFixed(4)}</div>
-            <div>Second Sats: {(secondPrice * convertion).toFixed(4)}</div>
+            First Sats: ${Number(firstPrice).toFixed(4)}
+            Second Sats: ${Number(secondPrice).toFixed(4)}
             <div>Change: {percentageChange.toFixed(2)}%</div>
           </>
         );
